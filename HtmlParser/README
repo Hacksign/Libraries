@@ -1,0 +1,24 @@
+description:
+	a library to parse html content
+dependence:
+	boost
+usage:
+	#include <boost/foreach.hpp>
+	#include "HtmlParser/HtmlParser.h"
+	#define foreach BOOST_FOREACH
+
+	HtmlParser parser(output);
+	HtmlParser contents = parser.find_by_tag_name("dl");
+	vector< HtmlParser > td;
+	td = contents.find_by_attribute("id", "email_show");
+	foreach(HtmlParser p, td){
+		cout<<p.text()<<endl;
+	}
+	td.clear();
+	td = contents.find_by_attribute("id", "nameSpan");
+	foreach(HtmlParser p, td)
+		cout<<p.text()<<endl;
+	td.clear();
+	vector< HtmlParser > phone = parser.find_by_attribute_regex("id", "phoneTr\\d+");
+	foreach(HtmlParser p, phone)
+		cout<<p.text()<<endl;
