@@ -1,9 +1,11 @@
+CPPFLAGS := 
+
 all : libuseragent.a
 
 libuseragent.a : UserAgent.o
 	ar r $@ $^
 UserAgent.o : UserAgent.cpp
-	g++ -c $^ -o $@
+	g++ -c $^ -o $@ $(CPPFLAGS)
 
 clean:
 	rm -rf *.o
