@@ -47,27 +47,27 @@ string Spider::HtmlParser::text(){
 size_t Spider::HtmlParser::size(){
 	tree< HTML::Node >::iterator it = mHtml.begin();
 	++it;//skip root node
-	return mHtml.number_of_siblings(it);
+	return mHtml.number_of_siblings(it) + 1;
 }
-vector<Spider::HtmlParser> Spider::HtmlParser::find_by_attribute(const string& attr, const string& value){
-	vector<Spider::HtmlParser> retVal;
+Spider::HtmlParser Spider::HtmlParser::find_by_attribute(const string& attr, const string& value){
 	tree< HTML::Node >::iterator it = mHtml.begin();
 	++it;//skip root node;
+	string finalHtml;
 	for(; it != mHtml.end(); ++it){
 		it->parseAttributes();
 		pair<bool, string> t = it->attribute(attr);
 		if(t.first && t.second == value){
 			string html;
 			walkTree(it, html);
-			retVal.push_back(Spider::HtmlParser(html));	
+			finalHtml.append(html);	
 		}
 	}
-	return retVal;
+	return Spider::HtmlParser(finalHtml);
 }
-vector<Spider::HtmlParser> Spider::HtmlParser::find_by_attribute_regex(const string& attr, const string& regex){
-	vector<Spider::HtmlParser> retVal;
+Spider::HtmlParser Spider::HtmlParser::find_by_attribute_regex(const string& attr, const string& regex){
 	tree< HTML::Node >::iterator it = mHtml.begin();
 	++it;//skip root node;
+	string finalHtml;
 	for(; it != mHtml.end(); ++it){
 		it->parseAttributes();
 		pair<bool, string> t = it->attribute(attr);
@@ -75,25 +75,25 @@ vector<Spider::HtmlParser> Spider::HtmlParser::find_by_attribute_regex(const str
 		if(t.first && boost::regex_match(t.second, r)){
 			string html;
 			walkTree(it, html);
-			retVal.push_back(Spider::HtmlParser(html));	
+			finalHtml.append(html);	
 		}
 	}
-	return retVal;
+	return Spider::HtmlParser(finalHtml);
 }
-vector< pair<Spider::HtmlParser, string> > Spider::HtmlParser::attr(const string& attr){
-	vector< pair<Spider::HtmlParser, string> > retVal;	
+Spider::HtmlParser Spider::HtmlParser::attr(const string& attr){
 	tree< HTML::Node >::iterator it = mHtml.begin();
 	++it;//skip root node;
+	string finalHtml;
 	for(; it != mHtml.end(); ++it){
 		it->parseAttributes();
 		pair<bool, string> t = it->attribute(attr);
 		if(t.first){
 			string html;
 			walkTree(it, html);
-			retVal.push_back(pair<Spider::HtmlParser, string>(Spider::HtmlParser(html), t.second));	
+			finalHtml.append(html);
 		}
 	}
-	return retVal;
+	return Spider::HtmlParser(finalHtml);
 }
 void Spider::HtmlParser::walkTree(tree< HTML::Node >::iterator it, string& result){
 	result += it->text();

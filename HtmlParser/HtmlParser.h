@@ -23,9 +23,9 @@ namespace Spider{
 			string text();
 			size_t size();
 			Spider::HtmlParser find_by_tag_name(const string);
-			vector<Spider::HtmlParser> find_by_attribute(const string&, const string&);
-			vector<Spider::HtmlParser> find_by_attribute_regex(const string&, const string&);
-			vector< pair<Spider::HtmlParser, string> > attr(const string&);
+			Spider::HtmlParser find_by_attribute(const string&, const string&);
+			Spider::HtmlParser find_by_attribute_regex(const string&, const string&);
+			Spider::HtmlParser attr(const string&);
 			inline tree< HTML::Node >::iterator begin(){ return mHtml.begin(); }
 			inline tree< HTML::Node >::iterator end(){ return mHtml.end(); }
 		public: //operator overload
