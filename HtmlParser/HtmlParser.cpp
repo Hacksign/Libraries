@@ -46,8 +46,7 @@ string Spider::HtmlParser::text(){
 }
 size_t Spider::HtmlParser::size(){
 	tree< HTML::Node >::iterator it = mHtml.begin();
-	++it;//skip root node
-	return mHtml.number_of_siblings(it) + 1;
+	return mHtml.number_of_children(it);
 }
 Spider::HtmlParser Spider::HtmlParser::find_by_attribute(const string& attr, const string& value){
 	tree< HTML::Node >::iterator it = mHtml.begin();
