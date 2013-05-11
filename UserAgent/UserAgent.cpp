@@ -1,73 +1,82 @@
 #include "UserAgent.h"
-#include <string.h>
+#include <boost/algorithm/string.hpp>
+#include <boost/foreach.hpp>
+
+using namespace boost;
+
+#ifndef foreach
+#define foreach BOOST_FOREACH
+#endif
+
 UserAgent::UserAgent(){
-	this->curl = curl_easy_init();
-	this->curl_setopt(CURLOPT_WRITEHEADER, &this->headerInfo);
-	this->curl_setopt(CURLOPT_HEADERFUNCTION, &this->header_callback);
-	this->curl_setopt(CURLOPT_WRITEDATA, &this->responseInfo);
-	this->curl_setopt(CURLOPT_WRITEFUNCTION, &this->write_callback);
-	this->curl_setopt(CURLOPT_FOLLOWLOCATION, 1L);
-	this->curl_setopt(CURLOPT_TIMEOUT, 3L);
-	this->curl_setopt(CURLOPT_COOKIEJAR, "./cookies");
-	this->curl_setopt(CURLOPT_HEADER, 1L);
-	this->statusCode = -1;
+	curl = curl_easy_init();
+	curl_easy_setopt(curl, CURLOPT_WRITEHEADER, &headerInfo);
+	curl_easy_setopt(curl, CURLOPT_HEADERFUNCTION, &header_callback);
+	curl_easy_setopt(curl, CURLOPT_WRITEDATA, &responseInfo);
+	curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &write_callback);
+	curl_easy_setopt(curl, CURLOPT_HEADER, 0L);
+	curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
+	curl_easy_setopt(curl, CURLOPT_TIMEOUT, 3L);
+	curl_easy_setopt(curl, CURLOPT_HEADER, 1L);
+	statusCode = -1;
+	list = NULL;
 }
 UserAgent::~UserAgent(){
-	curl_easy_cleanup(this->curl);
-}
-void UserAgent::curl_setopt(CURLoption opt, ...){
-	va_list  args;
-	va_start(args, opt);
-	curl_easy_setopt(this->curl,opt,va_arg(args,void *));
-	va_end(args);
+	curl_easy_cleanup(curl);
 }
 void UserAgent::proxy(const char *proxy, curl_proxytype type,  const char *user, const char * pwd){
-	this->curl_setopt(CURLOPT_PROXY, proxy);
+	curl_easy_setopt(curl, CURLOPT_PROXY, proxy);
 	switch(type){
 		case CURLPROXY_HTTP:
-			this->curl_setopt(CURLOPT_HTTPPROXYTUNNEL,true);
-			this->curl_setopt(CURLOPT_PROXYTYPE,CURLPROXY_HTTP);
+			curl_easy_setopt(curl, CURLOPT_HTTPPROXYTUNNEL,true);
+			curl_easy_setopt(curl, CURLOPT_PROXYTYPE,CURLPROXY_HTTP);
 		break;
 		case CURLPROXY_SOCKS4:
-			this->curl_setopt(CURLOPT_PROXYTYPE,CURLPROXY_SOCKS4);
+			curl_easy_setopt(curl, CURLOPT_PROXYTYPE,CURLPROXY_SOCKS4);
 		break;
 		case CURLPROXY_SOCKS5:
-			this->curl_setopt(CURLOPT_PROXYTYPE,CURLPROXY_SOCKS5);
+			curl_easy_setopt(curl, CURLOPT_PROXYTYPE,CURLPROXY_SOCKS5);
 		break;
 	}
 }
 CURLcode UserAgent::curl_perform(){
-	return curl_easy_perform(this->curl);
+	return curl_easy_perform(curl);
 }
 CURLcode UserAgent::post(const char * url, const char * content, const char *cookie){
-	this->headerInfo.clear();
-	this->responseInfo.clear();
+	headerInfo.clear();
+	responseInfo.clear();
 	if(strstr(url,"https://")){
-		this->curl_setopt(CURLOPT_SSL_VERIFYPEER,0L);
-		this->curl_setopt(CURLOPT_SSL_VERIFYHOST,0L);
+		curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER,0L);
+		curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST,0L);
 	}
 	if(cookie != NULL){
-		this->curl_setopt(CURLOPT_COOKIE, cookie);
+		curl_easy_setopt(curl, CURLOPT_COOKIE, cookie);
 	}
-	this->curl_setopt(CURLOPT_URL, url);
-	this->curl_setopt(CURLOPT_POST,1L);
-	this->curl_setopt(CURLOPT_POSTFIELDS, content);
-	return this->curl_perform();
+	curl_easy_setopt(curl, CURLOPT_URL, url);
+	curl_easy_setopt(curl, CURLOPT_POST,1L);
+	curl_easy_setopt(curl, CURLOPT_POSTFIELDS, content);
+	CURLcode c = curl_perform();
+	curl_slist_free_all(list);
+	list = NULL;
+	return c;
 } 
 CURLcode UserAgent::get(const char *url, const char *cookie){
-	this->headerInfo.clear();
-	this->responseInfo.clear();
+	headerInfo.clear();
+	responseInfo.clear();
 
 	if(cookie != NULL){
-		this->curl_setopt(CURLOPT_COOKIE, cookie);
+		curl_easy_setopt(curl, CURLOPT_COOKIE, cookie);
 	}
 
 	if(strstr(url,"https://")){
-		this->curl_setopt(CURLOPT_SSL_VERIFYPEER,0L);
-		this->curl_setopt(CURLOPT_SSL_VERIFYHOST,0L);
+		curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER,0L);
+		curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST,0L);
 	}
-	this->curl_setopt(CURLOPT_URL, url);
-	return this->curl_perform();
+	curl_easy_setopt(curl, CURLOPT_URL, url);
+	CURLcode c = curl_perform();
+	curl_slist_free_all(list);
+	list = NULL;
+	return c;
 }
 size_t UserAgent::header_callback( void *ptr, size_t size, size_t nmemb, std::string *userdata){
 	userdata->append((const char *)ptr, size * nmemb);
@@ -80,30 +89,40 @@ size_t UserAgent::write_callback( void *ptr, size_t size, size_t nmemb, std::str
 	return size*nmemb;
 }
 const char * UserAgent::response(){
-	return this->responseInfo.c_str();
+	if(!headerInfo.empty())
+		return trim_copy(responseInfo.substr(headerInfo.length(), responseInfo.length())).c_str();
+	return responseInfo.c_str();
 }
 long UserAgent::status(){
-	CURLcode r = curl_easy_getinfo(this->curl, CURLINFO_RESPONSE_CODE, &this->statusCode);
-  //cout<<r<<endl;
+	CURLcode r = curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &statusCode);
 	return statusCode;
 }
-const char * UserAgent::header(const char * field){
-	std::string ret;
-	size_t pos = this->headerInfo.find(field);
-	if(pos != string::npos){
-		size_t end = this->headerInfo.find("\r\n", pos); 
-		ret = this->headerInfo.substr(pos + strlen(field), end - pos - strlen(field));
-		pos = ret.find_first_not_of(" ");
-		ret = ret.substr(ret.find_first_not_of(" "), end);
-		return ret.c_str();
-	}
-	return NULL;
-}
 const char * UserAgent::header(){
-	return this->headerInfo.c_str();
+	trim(headerInfo);
+	return headerInfo.c_str();
 }
-struct curl_slist * UserAgent::header(const char * header,struct curl_slist *list){
+const char * UserAgent::header(const char * field, const char * char_used_to_join){
+	vector<string> retVal;
+	trim(headerInfo);
+	vector<string> splited;
+	split(splited, headerInfo, is_any_of("\n"));
+	foreach(string line, splited)
+		if(line.find(':') != string::npos){
+			string search_str(line);
+			to_lower(search_str);
+			string field_lower_case(field);
+			to_lower(field_lower_case);
+			size_t index = search_str.find_first_of(":");
+			size_t field_index = search_str.find(field_lower_case);
+			if( field_index != string::npos && field_index < index ){
+				string value(line.replace(0, index + 1, ""));
+				trim(value);
+				retVal.push_back(value);
+			}
+		}
+	return join(retVal, char_used_to_join).c_str();
+}
+struct curl_slist * UserAgent::header(const char * header){
 	list = curl_slist_append(list, header);
-	this->curl_setopt(CURLOPT_HTTPHEADER, list);
-	return list;
+	curl_easy_setopt(curl, CURLOPT_HTTPHEADER, list);
 }

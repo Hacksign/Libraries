@@ -3,6 +3,7 @@ CPPFLAGS :=
 all : libuseragent.a
 
 libuseragent.a : UserAgent.o
+	strip $^
 	ar r $@ $^
 UserAgent.o : UserAgent.cpp
 	g++ -c $^ -o $@ $(CPPFLAGS)
