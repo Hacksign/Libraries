@@ -42,15 +42,12 @@ void UserAgent::proxy(const char *proxy, curl_proxytype type,  const char *user,
 CURLcode UserAgent::curl_perform(){
 	return curl_easy_perform(curl);
 }
-CURLcode UserAgent::post(const char * url, const char * content, const char *cookie){
+CURLcode UserAgent::post(const char * url, const char * content){
 	headerInfo.clear();
 	responseInfo.clear();
 	if(strstr(url,"https://")){
 		curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER,0L);
 		curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST,0L);
-	}
-	if(cookie != NULL){
-		curl_easy_setopt(curl, CURLOPT_COOKIE, cookie);
 	}
 	curl_easy_setopt(curl, CURLOPT_URL, url);
 	curl_easy_setopt(curl, CURLOPT_POST,1L);
@@ -60,13 +57,9 @@ CURLcode UserAgent::post(const char * url, const char * content, const char *coo
 	list = NULL;
 	return c;
 } 
-CURLcode UserAgent::get(const char *url, const char *cookie){
+CURLcode UserAgent::get(const char *url){
 	headerInfo.clear();
 	responseInfo.clear();
-
-	if(cookie != NULL){
-		curl_easy_setopt(curl, CURLOPT_COOKIE, cookie);
-	}
 
 	if(strstr(url,"https://")){
 		curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER,0L);

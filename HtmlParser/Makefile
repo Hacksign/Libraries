@@ -3,7 +3,6 @@ CPPFLAGS :=
 all : libhtmlparser.a
 
 libhtmlparser.a : Node.o ParserDom.o ParserSax.o HtmlParser.o 
-	strip $^
 	ar r $@ $^
 HtmlParser.o : HtmlParser.cpp
 	g++ -c $^ -o $@ $(CPPFLAGS)

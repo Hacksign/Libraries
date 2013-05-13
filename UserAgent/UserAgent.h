@@ -13,8 +13,8 @@ class UserAgent{
 		~UserAgent();
 	//public functions
 	public:
-		CURLcode post(const char * url,const char * content, const char *cookie = NULL);
-		CURLcode get(const char * url, const char *cookie = NULL);
+		CURLcode post(const char * url,const char * content);
+		CURLcode get(const char * url);
 		const char * header(const char *, const char *);
 		struct curl_slist * header(const char *);
 		const char * header();
