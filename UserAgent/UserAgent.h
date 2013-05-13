@@ -15,7 +15,8 @@ class UserAgent{
 	public:
 		CURLcode post(const char * url,const char * content);
 		CURLcode get(const char * url);
-		const char * header(const char *, const char *);
+		string header(const char *, const char *);
+		void debug(bool);
 		struct curl_slist * header(const char *);
 		const char * header();
 		long status();
@@ -31,7 +32,6 @@ class UserAgent{
 	private:
 		CURL *curl;
 		struct curl_slist *list;
-		long statusCode;
 		std::string headerInfo;
 		std::string responseInfo;
 

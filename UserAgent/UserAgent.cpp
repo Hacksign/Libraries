@@ -17,11 +17,14 @@ UserAgent::UserAgent(){
 	curl_easy_setopt(curl, CURLOPT_HEADER, 1L);
 	curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
 	curl_easy_setopt(curl, CURLOPT_TIMEOUT, 3L);
-	statusCode = -1;
 	list = NULL;
 }
 UserAgent::~UserAgent(){
 	curl_easy_cleanup(curl);
+}
+void UserAgent::debug(bool debug){
+	if(debug) curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
+	else curl_easy_setopt(curl, CURLOPT_VERBOSE, 0L);
 }
 void UserAgent::proxy(const char *proxy, curl_proxytype type,  const char *user, const char * pwd){
 	curl_easy_setopt(curl, CURLOPT_PROXY, proxy);
@@ -87,6 +90,7 @@ const char * UserAgent::response(){
 	return responseInfo.c_str();
 }
 long UserAgent::status(){
+	long statusCode;
 	CURLcode r = curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &statusCode);
 	return statusCode;
 }
@@ -94,7 +98,7 @@ const char * UserAgent::header(){
 	trim(headerInfo);
 	return headerInfo.c_str();
 }
-const char * UserAgent::header(const char * field, const char * char_used_to_join){
+string UserAgent::header(const char * field, const char * char_used_to_join){
 	vector<string> retVal;
 	trim(headerInfo);
 	vector<string> splited;
@@ -113,7 +117,7 @@ const char * UserAgent::header(const char * field, const char * char_used_to_joi
 				retVal.push_back(value);
 			}
 		}
-	return join(retVal, char_used_to_join).c_str();
+	return join(retVal, char_used_to_join);
 }
 struct curl_slist * UserAgent::header(const char * header){
 	list = curl_slist_append(list, header);

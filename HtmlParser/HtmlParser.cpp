@@ -50,7 +50,6 @@ size_t Spider::HtmlParser::size(){
 }
 Spider::HtmlParser Spider::HtmlParser::find_by_attribute(const string& attr, const string& value){
 	tree< HTML::Node >::iterator it = mHtml.begin();
-	++it;//skip root node;
 	string finalHtml;
 	for(; it != mHtml.end(); ++it){
 		it->parseAttributes();
@@ -65,7 +64,6 @@ Spider::HtmlParser Spider::HtmlParser::find_by_attribute(const string& attr, con
 }
 Spider::HtmlParser Spider::HtmlParser::find_by_attribute_regex(const string& attr, const string& regex){
 	tree< HTML::Node >::iterator it = mHtml.begin();
-	++it;//skip root node;
 	string finalHtml;
 	for(; it != mHtml.end(); ++it){
 		it->parseAttributes();
@@ -79,20 +77,16 @@ Spider::HtmlParser Spider::HtmlParser::find_by_attribute_regex(const string& att
 	}
 	return Spider::HtmlParser(finalHtml);
 }
-Spider::HtmlParser Spider::HtmlParser::attr(const string& attr){
+string Spider::HtmlParser::attr(const string& attr){
 	tree< HTML::Node >::iterator it = mHtml.begin();
-	++it;//skip root node;
-	string finalHtml;
 	for(; it != mHtml.end(); ++it){
 		it->parseAttributes();
 		pair<bool, string> t = it->attribute(attr);
 		if(t.first){
-			string html;
-			walkTree(it, html);
-			finalHtml.append(html);
+			return t.second;
 		}
 	}
-	return Spider::HtmlParser(finalHtml);
+	return string();
 }
 void Spider::HtmlParser::walkTree(tree< HTML::Node >::iterator it, string& result){
 	result += it->text();

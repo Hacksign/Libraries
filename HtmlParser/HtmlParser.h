@@ -25,7 +25,7 @@ namespace Spider{
 			Spider::HtmlParser find_by_tag_name(const string);
 			Spider::HtmlParser find_by_attribute(const string&, const string&);
 			Spider::HtmlParser find_by_attribute_regex(const string&, const string&);
-			Spider::HtmlParser attr(const string&);
+			string attr(const string&);
 			inline tree< HTML::Node >::iterator begin(){ return mHtml.begin(); }
 			inline tree< HTML::Node >::iterator end(){ return mHtml.end(); }
 		public: //operator overload
