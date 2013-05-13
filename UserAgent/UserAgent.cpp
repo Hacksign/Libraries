@@ -14,10 +14,9 @@ UserAgent::UserAgent(){
 	curl_easy_setopt(curl, CURLOPT_HEADERFUNCTION, &header_callback);
 	curl_easy_setopt(curl, CURLOPT_WRITEDATA, &responseInfo);
 	curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &write_callback);
-	curl_easy_setopt(curl, CURLOPT_HEADER, 0L);
+	curl_easy_setopt(curl, CURLOPT_HEADER, 1L);
 	curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
 	curl_easy_setopt(curl, CURLOPT_TIMEOUT, 3L);
-	curl_easy_setopt(curl, CURLOPT_HEADER, 1L);
 	statusCode = -1;
 	list = NULL;
 }
@@ -39,9 +38,6 @@ void UserAgent::proxy(const char *proxy, curl_proxytype type,  const char *user,
 		break;
 	}
 }
-CURLcode UserAgent::curl_perform(){
-	return curl_easy_perform(curl);
-}
 CURLcode UserAgent::post(const char * url, const char * content){
 	headerInfo.clear();
 	responseInfo.clear();
@@ -52,9 +48,11 @@ CURLcode UserAgent::post(const char * url, const char * content){
 	curl_easy_setopt(curl, CURLOPT_URL, url);
 	curl_easy_setopt(curl, CURLOPT_POST,1L);
 	curl_easy_setopt(curl, CURLOPT_POSTFIELDS, content);
-	CURLcode c = curl_perform();
-	curl_slist_free_all(list);
-	list = NULL;
+	CURLcode c = curl_easy_perform(curl);
+	if(list){
+		curl_slist_free_all(list);
+		list = NULL;
+	}
 	return c;
 } 
 CURLcode UserAgent::get(const char *url){
@@ -66,9 +64,11 @@ CURLcode UserAgent::get(const char *url){
 		curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST,0L);
 	}
 	curl_easy_setopt(curl, CURLOPT_URL, url);
-	CURLcode c = curl_perform();
-	curl_slist_free_all(list);
-	list = NULL;
+	CURLcode c = curl_easy_perform(curl);
+	if(list){
+		curl_slist_free_all(list);
+		list = NULL;
+	}
 	return c;
 }
 size_t UserAgent::header_callback( void *ptr, size_t size, size_t nmemb, std::string *userdata){

@@ -25,7 +25,6 @@ class UserAgent{
 
 	//private functions
 	private:
-		CURLcode curl_perform();
 		static size_t header_callback( void *ptr, size_t size, size_t nmemb, std::string *userdata);
 		static size_t write_callback( void *ptr, size_t size, size_t nmemb, std::string *response);
 	//private varibales
