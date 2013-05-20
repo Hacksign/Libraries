@@ -20,7 +20,7 @@ class UserAgent{
 		struct curl_slist * header(const char *);
 		const char * header();
 		long status();
-		const char * response(void);
+		string response(void);
 		void proxy(const char *proxy, curl_proxytype type = CURLPROXY_HTTP,  const char *user = NULL, const char * pwd = NULL);
 
 

@@ -84,10 +84,10 @@ size_t UserAgent::write_callback( void *ptr, size_t size, size_t nmemb, std::str
 
 	return size*nmemb;
 }
-const char * UserAgent::response(){
+string UserAgent::response(){
 	if(!headerInfo.empty())
-		return trim_copy(responseInfo.substr(headerInfo.length(), responseInfo.length())).c_str();
-	return responseInfo.c_str();
+		return trim_copy(responseInfo.substr(headerInfo.length(), responseInfo.length()));
+	return responseInfo;
 }
 long UserAgent::status(){
 	long statusCode;
