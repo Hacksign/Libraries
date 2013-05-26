@@ -22,12 +22,12 @@ Spider::HtmlParser::HtmlParser(const std::ifstream& file){
 }
 Spider::HtmlParser Spider::HtmlParser::find_by_tag_name(const string tagName){
 	string tmpHtml;
-	for(tree< HTML::Node >::tree::iterator begin = mHtml.begin(); begin != mHtml.end() && mHtml.is_valid(begin); ++begin){
+	for(tree< HTML::Node >::tree::iterator begin = mHtml.begin(); begin != mHtml.end() && mHtml.is_valid(begin);){
 		if(begin->isTag() && begin->tagName() == tagName){//get start tag
 			walkTree(begin, tmpHtml);
 			if(mHtml.number_of_siblings(begin)) begin = mHtml.next_at_same_depth(begin);
-			else break;
-		}
+			else  break;
+		}else ++begin;
 	}
 	return Spider::HtmlParser(tmpHtml);
 }
