@@ -94,6 +94,9 @@ void Spider::HtmlParser::walkTree(tree< HTML::Node >::iterator it, string& resul
 		walkTree(mHtml.child(it, i), result);
 	result += it->closingText();
 }
+Spider::HtmlParser Spider::HtmlParser::operator=(Spider::HtmlParser rhs) const{
+	return rhs;
+}
 Spider::HtmlParser Spider::HtmlParser::operator[](int index){
 	string tmpHtml;
 	tree< HTML::Node >::iterator it = mHtml.begin();
