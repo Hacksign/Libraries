@@ -30,7 +30,6 @@ namespace Spider{
 			inline tree< HTML::Node >::iterator end(){ return mHtml.end(); }
 		public: //operator overload
 			Spider::HtmlParser operator[](int index);
-			Spider::HtmlParser operator=(Spider::HtmlParser) const;
 			friend ostream & operator<<(ostream& stream, Spider::HtmlParser const& obj){
 				for(tree< HTML::Node >::iterator it = const_cast<Spider::HtmlParser&>(obj).begin(); it != const_cast<Spider::HtmlParser&>(obj).end(); ++it){
 					stream<<trim_copy(it->text())<<endl;
