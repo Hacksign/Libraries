@@ -17,6 +17,7 @@ class UserAgent{
 		CURLcode get(const char * url);
 		string header(const char *, const char *);
 		void debug(bool);
+		void timeout(unsigned long);
 		struct curl_slist * header(const char *);
 		const char * header();
 		long status();

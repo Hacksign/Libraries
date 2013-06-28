@@ -26,6 +26,9 @@ void UserAgent::debug(bool debug){
 	if(debug) curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
 	else curl_easy_setopt(curl, CURLOPT_VERBOSE, 0L);
 }
+void UserAgent::timeout(unsigned long timeout_second){
+	curl_easy_setopt(curl, CURLOPT_TIMEOUT, timeout_second);
+}
 void UserAgent::proxy(const char *proxy, curl_proxytype type,  const char *user, const char * pwd){
 	curl_easy_setopt(curl, CURLOPT_PROXY, proxy);
 	switch(type){
