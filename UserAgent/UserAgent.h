@@ -18,6 +18,7 @@ class UserAgent{
 		string header(const char *, const char *);
 		void debug(bool);
 		void timeout(unsigned long);
+		void connection_timeout(unsigned long);
 		struct curl_slist * header(const char *);
 		const char * header();
 		long status();

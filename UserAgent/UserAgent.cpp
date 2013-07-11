@@ -16,7 +16,7 @@ UserAgent::UserAgent(){
 	curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &write_callback);
 	curl_easy_setopt(curl, CURLOPT_HEADER, 1L);
 	curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
-	curl_easy_setopt(curl, CURLOPT_TIMEOUT, 3L);
+	curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, 0);
 	list = NULL;
 }
 UserAgent::~UserAgent(){
@@ -28,6 +28,9 @@ void UserAgent::debug(bool debug){
 }
 void UserAgent::timeout(unsigned long timeout_second){
 	curl_easy_setopt(curl, CURLOPT_TIMEOUT, timeout_second);
+}
+void UserAgent::connection_timeout(unsigned long timeout_second){
+	curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, timeout_second);
 }
 void UserAgent::proxy(const char *proxy, curl_proxytype type,  const char *user, const char * pwd){
 	curl_easy_setopt(curl, CURLOPT_PROXY, proxy);
