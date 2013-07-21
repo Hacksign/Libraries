@@ -10,10 +10,11 @@ using namespace std;
 class UserAgent{
 	public:
 		UserAgent();
-		~UserAgent();
+		virtual ~UserAgent();
 	//public functions
 	public:
 		CURLcode post(const char * url,const char * content);
+		CURLcode post(const char * url,const char * content, const char * filename);//for upload file use
 		CURLcode get(const char * url);
 		string header(const char *, const char *);
 		void debug(bool);
