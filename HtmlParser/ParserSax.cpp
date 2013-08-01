@@ -24,7 +24,7 @@ literal_mode_elem[] =
 	{0, 0, 0}
 };
 
-void htmlcxx::HTML::ParserSax::parse(const std::string &html)
+void HTML::ParserSax::parse(const std::string &html)
 {
 //	std::cerr << "Parsing string" << std::endl;
 	parse(html.c_str(), html.c_str() + html.length());
@@ -33,7 +33,7 @@ void htmlcxx::HTML::ParserSax::parse(const std::string &html)
 
 
 template <typename _Iterator>
-void htmlcxx::HTML::ParserSax::parse(_Iterator begin, _Iterator end)
+void HTML::ParserSax::parse(_Iterator begin, _Iterator end)
 {
 //	std::cerr << "Parsing iterator" << std::endl;
 	parse(begin, end, typename std::iterator_traits<_Iterator>::iterator_category());
@@ -41,7 +41,7 @@ void htmlcxx::HTML::ParserSax::parse(_Iterator begin, _Iterator end)
 
 
 template <typename _Iterator>
-void htmlcxx::HTML::ParserSax::parse(_Iterator &begin, _Iterator &end, std::forward_iterator_tag)
+void HTML::ParserSax::parse(_Iterator &begin, _Iterator &end, std::forward_iterator_tag)
 {
 	typedef _Iterator iterator;
 //	std::cerr << "Parsing forward_iterator" << std::endl;
@@ -265,12 +265,12 @@ DONE:
 }
 
 template <typename _Iterator>
-void htmlcxx::HTML::ParserSax::parseComment(_Iterator b, _Iterator c)
+void HTML::ParserSax::parseComment(_Iterator b, _Iterator c)
 {
 	//DEBUGP("Creating comment node %s\n", std::string(b, c).c_str());
 	
 	//申请一个新的Node节点
-	htmlcxx::HTML::Node com_node;
+	HTML::Node com_node;
 	
 	//FIXME: set_tagname shouldn't be needed, but first I must check
 	//legacy code
@@ -297,12 +297,12 @@ void htmlcxx::HTML::ParserSax::parseComment(_Iterator b, _Iterator c)
 	并将这段文本作为文本内容来进行处理。
 */
 template <typename _Iterator>
-void htmlcxx::HTML::ParserSax::parseContent(_Iterator b, _Iterator c)
+void HTML::ParserSax::parseContent(_Iterator b, _Iterator c)
 {
 	//DEBUGP("Creating text node %s\n", (std::string(b, c)).c_str());
 	
 	//申请一个新的Node节点
-	htmlcxx::HTML::Node txt_node;
+	HTML::Node txt_node;
 	
 	//FIXME: set_tagname shouldn't be needed, but first I must check
 	//legacy code
@@ -328,7 +328,7 @@ void htmlcxx::HTML::ParserSax::parseContent(_Iterator b, _Iterator c)
 */
 
 template <typename _Iterator>
-void htmlcxx::HTML::ParserSax::parseHtmlTag(_Iterator b, _Iterator c)
+void HTML::ParserSax::parseHtmlTag(_Iterator b, _Iterator c)
 {
 	_Iterator name_begin(b);  //申请一个新的游标name_begin游标，初始为b
 	++name_begin;//将name_begin后移一位
@@ -371,7 +371,7 @@ void htmlcxx::HTML::ParserSax::parseHtmlTag(_Iterator b, _Iterator c)
 	
 	
 	//之后，我们就可以将其作为Node节点来做一些存储的工作了。
-	htmlcxx::HTML::Node tag_node;
+	HTML::Node tag_node;
 	//by now, length is just the size of the tag
 	std::string text(b, c);
 	tag_node.length(static_cast<unsigned int>(text.length()));
@@ -390,7 +390,7 @@ void htmlcxx::HTML::ParserSax::parseHtmlTag(_Iterator b, _Iterator c)
 
 template <typename _Iterator>
 _Iterator
-htmlcxx::HTML::ParserSax::skipHtmlComment(_Iterator c, _Iterator end)
+HTML::ParserSax::skipHtmlComment(_Iterator c, _Iterator end)
 {
 	while ( c != end ) {
 		if (*c++ == '-' && c != end && *c == '-')
@@ -410,7 +410,7 @@ htmlcxx::HTML::ParserSax::skipHtmlComment(_Iterator c, _Iterator end)
 
 
 
-namespace htmlcxx { namespace HTML {
+namespace HTML {
 
 //本方法主要是从游标c处开始，直到游标end之间，寻找到第一个quote字符的位置并返回其游标，未找到则返回end的位置。
 
@@ -436,7 +436,7 @@ const char *find_next_quote(const char *c, const char *end, char quote)
 	else return end;
 }
 
-}}
+}
 
 
 /*
@@ -445,7 +445,7 @@ const char *find_next_quote(const char *c, const char *end, char quote)
 */
 
 template <typename _Iterator>
-_Iterator htmlcxx::HTML::ParserSax::skipHtmlTag(_Iterator c, _Iterator end)
+_Iterator HTML::ParserSax::skipHtmlTag(_Iterator c, _Iterator end)
 {
 	while (c != end && *c != '>')
 	{

@@ -1,4 +1,4 @@
-CPPFLAGS := -g
+CPPFLAGS := 
 
 all : libuseragent.a
 

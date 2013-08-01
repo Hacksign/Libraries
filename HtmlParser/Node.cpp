@@ -9,7 +9,6 @@
 
 
 using namespace std;
-using namespace htmlcxx;
 using namespace HTML;
 
 void Node::parseAttributes() 

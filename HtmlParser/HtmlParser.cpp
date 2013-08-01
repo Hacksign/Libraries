@@ -5,53 +5,50 @@
 #include <boost/regex.hpp>
 
 using namespace std;
-Spider::HtmlParser::HtmlParser(const char* html){
+HTML::HtmlParser::HtmlParser(const char* html){
 	string tmp(html);
-	HTML::ParserDom parser;
-	mHtml = parser.parseTree(tmp);
+	mHtmlTree = parseTree(tmp);
 }
-Spider::HtmlParser::HtmlParser(const string html){
-	HTML::ParserDom parser;
-	mHtml = parser.parseTree(html);
+HTML::HtmlParser::HtmlParser(const string html){
+	mHtmlTree = parseTree(html);
 }
-Spider::HtmlParser::HtmlParser(const std::ifstream& file){
+HTML::HtmlParser::HtmlParser(const std::ifstream& file){
 	std::stringstream out;
 	out<<file.rdbuf();
-	HTML::ParserDom parser;
-	mHtml = parser.parseTree(out.str());
+	mHtmlTree = parseTree(out.str());
 }
-Spider::HtmlParser Spider::HtmlParser::find_by_tag_name(const string tagName){
+HTML::HtmlParser HTML::HtmlParser::find_by_tag_name(const string tagName){
 	string tmpHtml;
-	for(tree< HTML::Node >::tree::iterator begin = mHtml.begin(); begin != mHtml.end() && mHtml.is_valid(begin);){
+	for(tree< HTML::Node >::tree::iterator begin = mHtmlTree.begin(); begin != mHtmlTree.end() && mHtmlTree.is_valid(begin);){
 		if(begin->isTag() && begin->tagName() == tagName){//get start tag
 			walkTree(begin, tmpHtml);
-			if(mHtml.number_of_siblings(begin)) begin = mHtml.next_at_same_depth(begin);
+			if(mHtmlTree.number_of_siblings(begin)) begin = mHtmlTree.next_at_same_depth(begin);
 			else  break;
 		}else ++begin;
 	}
-	return Spider::HtmlParser(tmpHtml);
+	return HTML::HtmlParser(tmpHtml);
 }
-string Spider::HtmlParser::get_html(){
+string HTML::HtmlParser::get_html(){
 	string tmpHtml;
-	tree< HTML::Node >::iterator begin = mHtml.begin();
+	tree< HTML::Node >::iterator begin = mHtmlTree.begin();
 	walkTree(begin, tmpHtml);
 	return tmpHtml;
 }
-string Spider::HtmlParser::text(){
+string HTML::HtmlParser::text(){
 	string result;
-	for(tree< HTML::Node >::iterator it = mHtml.begin(); it != mHtml.end(); ++it)
+	for(tree< HTML::Node >::iterator it = mHtmlTree.begin(); it != mHtmlTree.end(); ++it)
 		if(!it->isTag() && !it->isComment())
 			result += trim_copy(it->text());
 	return result;
 }
-size_t Spider::HtmlParser::size(){
-	tree< HTML::Node >::iterator it = mHtml.begin();
-	return mHtml.number_of_children(it);
+size_t HTML::HtmlParser::size(){
+	tree< HTML::Node >::iterator it = mHtmlTree.begin();
+	return mHtmlTree.number_of_children(it);
 }
-Spider::HtmlParser Spider::HtmlParser::find_by_attribute(const string& attr, const string& value){
-	tree< HTML::Node >::iterator it = mHtml.begin();
+HTML::HtmlParser HTML::HtmlParser::find_by_attribute(const string& attr, const string& value){
+	tree< HTML::Node >::iterator it = mHtmlTree.begin();
 	string finalHtml;
-	for(; it != mHtml.end(); ++it){
+	for(; it != mHtmlTree.end(); ++it){
 		it->parseAttributes();
 		pair<bool, string> t = it->attribute(attr);
 		if(t.first && t.second == value){
@@ -60,12 +57,12 @@ Spider::HtmlParser Spider::HtmlParser::find_by_attribute(const string& attr, con
 			finalHtml.append(html);	
 		}
 	}
-	return Spider::HtmlParser(finalHtml);
+	return HTML::HtmlParser(finalHtml);
 }
-Spider::HtmlParser Spider::HtmlParser::find_by_attribute_regex(const string& attr, const string& regex){
-	tree< HTML::Node >::iterator it = mHtml.begin();
+HTML::HtmlParser HTML::HtmlParser::find_by_attribute_regex(const string& attr, const string& regex){
+	tree< HTML::Node >::iterator it = mHtmlTree.begin();
 	string finalHtml;
-	for(; it != mHtml.end(); ++it){
+	for(; it != mHtmlTree.end(); ++it){
 		it->parseAttributes();
 		pair<bool, string> t = it->attribute(attr);
 		boost::regex r(regex);
@@ -75,11 +72,11 @@ Spider::HtmlParser Spider::HtmlParser::find_by_attribute_regex(const string& att
 			finalHtml.append(html);	
 		}
 	}
-	return Spider::HtmlParser(finalHtml);
+	return HTML::HtmlParser(finalHtml);
 }
-string Spider::HtmlParser::attr(const string& attr){
-	tree< HTML::Node >::iterator it = mHtml.begin();
-	for(; it != mHtml.end(); ++it){
+string HTML::HtmlParser::attr(const string& attr){
+	tree< HTML::Node >::iterator it = mHtmlTree.begin();
+	for(; it != mHtmlTree.end(); ++it){
 		it->parseAttributes();
 		pair<bool, string> t = it->attribute(attr);
 		if(t.first){
@@ -88,17 +85,17 @@ string Spider::HtmlParser::attr(const string& attr){
 	}
 	return string();
 }
-void Spider::HtmlParser::walkTree(tree< HTML::Node >::iterator it, string& result){
+void HTML::HtmlParser::walkTree(tree< HTML::Node >::iterator it, string& result){
 	result += it->text();
-	for(int i = 0; i < mHtml.number_of_children(it); ++i)
-		walkTree(mHtml.child(it, i), result);
+	for(int i = 0; i < mHtmlTree.number_of_children(it); ++i)
+		walkTree(mHtmlTree.child(it, i), result);
 	result += it->closingText();
 }
-Spider::HtmlParser Spider::HtmlParser::operator[](int index){
+HTML::HtmlParser HTML::HtmlParser::operator[](int index){
 	string tmpHtml;
-	tree< HTML::Node >::iterator it = mHtml.begin();
+	tree< HTML::Node >::iterator it = mHtmlTree.begin();
 	++it;//skip root node
-	for(int i = 0; i < index; ++i) it = mHtml.next_sibling(it);
+	for(int i = 0; i < index; ++i) it = mHtmlTree.next_sibling(it);
 	walkTree(it, tmpHtml);
-	return Spider::HtmlParser(tmpHtml);
+	return HTML::HtmlParser(tmpHtml);
 }

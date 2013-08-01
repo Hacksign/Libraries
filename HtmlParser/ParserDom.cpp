@@ -11,7 +11,6 @@
 #define TAG_NAME_MAX 10
 
 using namespace std;
-using namespace htmlcxx; 
 using namespace HTML; 
 
 const tree<HTML::Node>& ParserDom::parseTree(const std::string &html)
