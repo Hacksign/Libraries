@@ -2,9 +2,9 @@ INCLUDE_FLAG :=
 LD_FLAG :=
 LIBS :=
 
-all : libjsonpp.a
+all : libjson.a
 
-libjsonpp.a : json_reader.o json_value.o json_writer.o
+libjson.a : json_reader.o json_value.o json_writer.o
 	ar r $@ $^
 json_reader.o : json_reader.cpp
 	g++ -c $^ -o $@	$(INCLUDE_FLAG)
