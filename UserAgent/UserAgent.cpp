@@ -14,7 +14,7 @@ UserAgent::UserAgent(){
 	curl_easy_setopt(curl, CURLOPT_HEADERFUNCTION, &header_callback);
 	curl_easy_setopt(curl, CURLOPT_WRITEDATA, &responseInfo);
 	curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &write_callback);
-	curl_easy_setopt(curl, CURLOPT_HEADER, 1L);
+	curl_easy_setopt(curl, CURLOPT_HEADER, 0);
 	curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
 	curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, 0);
 	list = NULL;
@@ -127,8 +127,10 @@ size_t UserAgent::write_callback( void *ptr, size_t size, size_t nmemb, std::str
 	return size*nmemb;
 }
 string UserAgent::response(){
+	/*
 	if(!headerInfo.empty())
 		return trim_copy(responseInfo.substr(headerInfo.length(), responseInfo.length()));
+		*/
 	return responseInfo;
 }
 long UserAgent::status(){
