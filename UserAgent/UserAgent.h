@@ -4,6 +4,7 @@
 #include <stdarg.h>
 #include <iostream>
 #include <string>
+#include <sstream>
 #include <vector>
 
 using namespace std;
@@ -15,6 +16,7 @@ class UserAgent{
 	public:
 		CURLcode post(const char * url,const char * content);
 		CURLcode post(const char * url,const char * content, const char * filename);//for upload file use
+		CURLcode post(const char * url,const char * content, const char * filename, void* buffer, size_t buffer_size);//for upload file use
 		CURLcode get(const char * url);
 		string header(const char *, const char *);
 		void debug(bool);

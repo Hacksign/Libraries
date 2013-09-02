@@ -67,6 +67,8 @@ CURLcode UserAgent::post(const char * url, const char * content){
 CURLcode UserAgent::post(const char * url,const char * content, const char * filename){
 	struct curl_httppost* post = NULL;
 	struct curl_httppost* last = NULL;
+	headerInfo.clear();
+	responseInfo.clear();
 	if(content){
 		vector<std::string> splited_content;
 		split(splited_content, content, is_any_of("&"));
@@ -92,6 +94,56 @@ CURLcode UserAgent::post(const char * url,const char * content, const char * fil
 	}
 	curl_easy_setopt(curl, CURLOPT_URL, url);
 	curl_easy_setopt(curl, CURLOPT_HTTPPOST,post);
+	if(strstr(url,"https://")){
+		curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER,0L);
+		curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST,0L);
+	}
+	CURLcode c = curl_easy_perform(curl);
+	if(list){
+		curl_slist_free_all(list);
+		list = NULL;
+	}
+	if(post) curl_formfree(post);
+	return c;
+}
+CURLcode UserAgent::post(const char * url,const char * content, const char * filename, void* buffer, size_t buffer_size){
+	struct curl_httppost* post = NULL;
+	struct curl_httppost* last = NULL;
+	headerInfo.clear();
+	responseInfo.clear();
+	if(content){
+		vector<std::string> splited_content;
+		split(splited_content, content, is_any_of("&"));
+		foreach(std::string item, splited_content){
+			if(item.find_first_of("=") != std::string::npos){
+				vector<std::string> each_field;
+				split(each_field, item, is_any_of("="));
+				curl_formadd(&post, &last, CURLFORM_COPYNAME , each_field[0].c_str(), \
+						CURLFORM_COPYCONTENTS, each_field[1].c_str(), \
+						CURLFORM_END);  
+			}else{
+				curl_formadd(&post, &last, CURLFORM_COPYNAME , item.c_str(), \
+						CURLFORM_END);  
+			}
+		}
+	}
+
+	if(filename && buffer){
+		vector<std::string> each_field;
+		split(each_field, filename, is_any_of("="));
+		curl_formadd(&post, &last, \
+				CURLFORM_COPYNAME, each_field[0].c_str(), \
+				CURLFORM_BUFFER, each_field[1].c_str(), \
+				CURLFORM_BUFFERPTR, buffer, \
+				CURLFORM_BUFFERLENGTH, buffer_size, \
+				CURLFORM_END);  
+	}
+	curl_easy_setopt(curl, CURLOPT_URL, url);
+	curl_easy_setopt(curl, CURLOPT_HTTPPOST,post);
+	if(strstr(url,"https://")){
+		curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER,0L);
+		curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST,0L);
+	}
 	CURLcode c = curl_easy_perform(curl);
 	if(list){
 		curl_slist_free_all(list);
