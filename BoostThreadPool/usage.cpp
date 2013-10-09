@@ -5,10 +5,10 @@
 using namespace HUtils;
 using namespace std;
 
-class MyThreadClass{
+class MyThreadClass : public IThread{
 	public:
 		MyThreadClass(int i) : number(i){};
-		void operator()(){
+		virtual void operator()(){
 			++number;
 		}
 	public:
