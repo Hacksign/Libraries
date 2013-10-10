@@ -24,12 +24,13 @@ class MyThreadClass : public IThread{
 
 int main(){
 	MyThreadClass t1(1);
-	ThreadPool<MyThreadClass> thread_pool(t1);
 	MyThreadClass t2(2);
-	thread_pool.add(t2);
-	for(ThreadPool<MyThreadClass>::iterator it = thread_pool.begin(); it != thread_pool.end(); ++it){
-		it->print();
+	{
+		ThreadPool<MyThreadClass> thread_pool(t1);
+		thread_pool.add(t2);
+		for(ThreadPool<MyThreadClass>::iterator it = thread_pool.begin(); it != thread_pool.end(); ++it){
+			it->print();
+		}
 	}
-	sleep(1);//wait all done
 	return 0;
 }

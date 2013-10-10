@@ -68,13 +68,7 @@ namespace HUtils{
 					add(_thread);
 				}
 				~ThreadPool(){
-					_joiner_running = false;
-					for(threadpool_iterator_t it = _thread_pool.begin(); it != _thread_pool.end(); ++it){
-						object_thread_t _each_thread = it->second; 
-						typename object_thread_t::iterator  tmp = _each_thread.begin();
-						tmp->second->join();
-					}
-					_joiner->join();
+					release();
 				}
 				boost::thread::id add(Thread_T& _thread){
 					for(threadpool_iterator_t it = _thread_pool.begin(); it != _thread_pool.end(); ++it){
@@ -95,6 +89,15 @@ namespace HUtils{
 				}
 				bool empey(){
 					return _thread_pool.empty();
+				}
+				void release(){
+					_joiner_running = false;
+					for(threadpool_iterator_t it = _thread_pool.begin(); it != _thread_pool.end(); ++it){
+						object_thread_t _each_thread = it->second; 
+						typename object_thread_t::iterator  tmp = _each_thread.begin();
+						tmp->second->join();
+					}
+					_joiner->join();
 				}
 				//for iterators
 				iterator begin(){
