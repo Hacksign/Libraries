@@ -98,6 +98,8 @@ namespace HUtils{
 						tmp->second->join();
 					}
 					_joiner->join();
+					_thread_pool.clear();
+					_thread_objects.clear();
 				}
 				//for iterators
 				iterator begin(){
