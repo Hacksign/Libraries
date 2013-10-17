@@ -59,12 +59,12 @@ namespace HUtils{
 				//init an empty pool
 				ThreadPool(){
 					_joiner_running = true;
-					_joiner = boost::shared_ptr<boost::thread>(new boost::thread(boost::bind(&ThreadPool<Thread_T>::_join_thread, this)));
+					_joiner = boost::shared_ptr<boost::thread>(new boost::thread(boost::bind(&ThreadPool<Thread_T>::_join_thread, this, boost::ref(_thread_pool_mutex))));
 				}
 				//init an pool with a thread
 				ThreadPool(Thread_T &_thread){
 					_joiner_running = true;
-					_joiner = boost::shared_ptr<boost::thread>(new boost::thread(boost::bind(&ThreadPool<Thread_T>::_join_thread, this)));
+					_joiner = boost::shared_ptr<boost::thread>(new boost::thread(boost::bind(&ThreadPool<Thread_T>::_join_thread, this, boost::ref(_thread_pool_mutex))));
 					add(_thread);
 				}
 				~ThreadPool(){
@@ -90,6 +90,25 @@ namespace HUtils{
 				bool empey(){
 					return _thread_pool.empty();
 				}
+				bool release(Thread_T& _thread){
+					boost::mutex::scoped_lock lock(_thread_pool_mutex);
+					for(threadpool_iterator_t it = _thread_pool.begin(); it != _thread_pool.end(); ++it){
+						object_thread_t _each_thread = it->second; 
+						typename object_thread_t::iterator  tmp = _each_thread.begin();
+						if(&_thread == tmp->first){
+							_thread_pool.erase(it);
+						}
+					}
+					for(typename object_thread_t::iterator it_obj_trd = _thread_objects.begin(); it_obj_trd != _thread_objects.end(); ++it_obj_trd){
+						if(it_obj_trd->first == &_thread){
+							Thread_T& _t = *(it_obj_trd->first);
+							_thread_objects.erase(it_obj_trd);
+							return true;
+						}
+					}
+					lock.unlock();
+					return false;
+				}
 				void release(){
 					_joiner_running = false;
 					for(threadpool_iterator_t it = _thread_pool.begin(); it != _thread_pool.end(); ++it){
@@ -110,19 +129,22 @@ namespace HUtils{
 				}
 			//private functions
 			private:
-				void _join_thread(){
+				void _join_thread(boost::mutex& _pool_mutex){
 					while(_joiner_running){
 						std::vector<threadpool_iterator_t> _joined_thread;
+						boost::mutex::scoped_lock lock(_pool_mutex);
 						//join thread
 						for(threadpool_iterator_t it = _thread_pool.begin(); it != _thread_pool.end(); ++it){
 							object_thread_t _each_thread = it->second; 
 							typename object_thread_t::iterator  tmp = _each_thread.begin();
+							if(tmp->second.get() == 0) continue;
 							if(tmp->second->timed_join(boost::posix_time::microseconds(100)))  _joined_thread.push_back(it);
 						}
 						//erase from thread pool
 						for(typename std::vector<threadpool_iterator_t>::iterator begin = _joined_thread.begin(); begin != _joined_thread.end(); ++begin){
 							_thread_pool.erase(*begin);
 						}
+						lock.unlock();
 						if(!_thread_pool.empty()) sleep(1);
 						else sleep(5);
 					}
@@ -135,6 +157,7 @@ namespace HUtils{
 				threadpool_t _thread_pool;
 				boost::shared_ptr<boost::thread> _joiner;
 				bool _joiner_running;
+				boost::mutex _thread_pool_mutex;
 		};
 }
 #endif
