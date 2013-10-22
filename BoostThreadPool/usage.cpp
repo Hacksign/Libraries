@@ -1,6 +1,5 @@
 #include <iostream>
 #include "ThreadPool.h"
-#include <unistd.h>
 
 //use below command to compile me:
 //	g++ usage.cpp -o test -lboost_thread -lboost_system
@@ -23,14 +22,21 @@ class MyThreadClass : public IThread{
 };
 
 int main(){
-	MyThreadClass t1(1);
-	MyThreadClass t2(2);
-	{
-		ThreadPool<MyThreadClass> thread_pool(t1);
-		thread_pool.add(t2);
-		for(ThreadPool<MyThreadClass>::iterator it = thread_pool.begin(); it != thread_pool.end(); ++it){
-			it->print();
-		}
+	ThreadPool<MyThreadClass> thread_pool;
+	//create 10 threads
+	for(int i = 0; i < 500; ++i){
+		thread_pool.add(new MyThreadClass(i));
 	}
+	cout<<"size:"<<thread_pool.size()<<endl;
+	vector<MyThreadClass *> p;
+	for(ThreadPool<MyThreadClass>::iterator it = thread_pool.begin(); it != thread_pool.end(); ++it){
+		cout<<(*it).number<<"\t"<<it->number<<endl;
+		p.push_back(it.get());
+	}
+	for(vector<MyThreadClass *>::iterator it = p.begin(); it != p.end(); ++it){
+		thread_pool.release(*it);
+		delete *it;
+	}
+	thread_pool.release();
 	return 0;
 }
