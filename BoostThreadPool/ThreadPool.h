@@ -16,17 +16,11 @@ namespace HUtils{
 				typedef std::map<Thread_T *, boost::thread *> _object_thread_t;
 				_object_thread_t _object_thread;
 				boost::thread_group _thread_pool;
-				boost::thread _joiner;
 				boost::mutex _thread_pool_mutex;
-				bool _joiner_running;
 			public:
 				ThreadPool(){
-					_joiner_running = true;
-					_joiner = boost::thread(boost::bind(&ThreadPool<Thread_T>::_join_thread, this, boost::ref(_thread_pool_mutex)));
 				}
 				ThreadPool(Thread_T* _thread){
-					_joiner_running = true;
-					_joiner = boost::thread(boost::bind(&ThreadPool<Thread_T>::_join_thread, this, boost::ref(_thread_pool_mutex)));
 					add(_thread);
 				}
 				~ThreadPool(){
@@ -94,6 +88,8 @@ namespace HUtils{
 					boost::mutex::scoped_lock lock(_thread_pool_mutex);
 					for(typename _object_thread_t::iterator it = _object_thread.begin(); it != _object_thread.end(); ++it){
 						if(it->first == _thread){
+							it->second->join();
+							_thread_pool.remove_thread(it->second);
 							_object_thread.erase(it);
 							bRet = true;
 							break;
@@ -104,36 +100,19 @@ namespace HUtils{
 				}
 				bool release(){
 					_thread_pool.join_all();
-					_joiner_running = false;
-					_joiner.join();
 					_object_thread.clear();
 				}
 				size_t size(){
 					return _object_thread.size();
+				}
+				bool empty(){
+					return _object_thread.empty();
 				}
 				iterator begin(){
 					return iterator(_object_thread);	
 				}
 				size_t end(){
 					return size();
-				}
-			private:
-				void _join_thread(boost::mutex& _pool_mutex){
-					while(_joiner_running){
-						if(_object_thread.empty()){
-							sleep(3);
-							continue;
-						}
-						boost::mutex::scoped_lock lock(_pool_mutex);
-						for(typename _object_thread_t::iterator it = _object_thread.begin(); it != _object_thread.end(); ++it){
-							if(it->second->joinable()){
-								it->second->join();
-								_thread_pool.remove_thread(it->second);
-								delete it->second;
-							}
-						}
-						lock.unlock();
-					}	
 				}
 		};
 }
