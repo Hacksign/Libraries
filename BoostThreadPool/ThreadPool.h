@@ -91,12 +91,25 @@ namespace HUtils{
 							it->second->join();
 							_thread_pool.remove_thread(it->second);
 							_object_thread.erase(it);
+							delete it->second;
 							bRet = true;
 							break;
 						}
 					}
 					lock.unlock();
 					return bRet;
+				}
+				boost::thread *grab(Thread_T* _thread){//CAUTION: DO NOT remember delete grabed thread in order to prevent memory leak
+					boost::mutex::scoped_lock lock(_thread_pool_mutex);
+					for(typename _object_thread_t::iterator it = _object_thread.begin(); it != _object_thread.end(); ++it){
+						if(it->first == _thread){
+							_thread_pool.remove_thread(it->second);
+							_object_thread.erase(it);
+							return it->second;
+							break;
+						}
+					}
+					lock.unlock();
 				}
 				bool release(){
 					_thread_pool.join_all();
