@@ -17,6 +17,7 @@ UserAgent::UserAgent(){
 	curl_easy_setopt(curl, CURLOPT_HEADER, 0);
 	curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
 	curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, 0);
+	curl_easy_setopt(curl, CURLOPT_NOSIGNAL, 1);//resolve 'longjmp causes uninitialized stack frame' bug
 	list = NULL;
 }
 UserAgent::~UserAgent(){

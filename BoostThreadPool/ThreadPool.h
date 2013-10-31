@@ -114,6 +114,14 @@ namespace HUtils{
 				size_t end(){
 					return size();
 				}
+				bool joinable(Thread_T* _thread){
+					for(typename _object_thread_t::iterator it = _object_thread.begin(); it != _object_thread.end(); ++it){
+						if(it->first == _thread){
+							return it->second->joinable();
+						}
+					}
+					return false;
+				}
 		};
 }
 #endif
