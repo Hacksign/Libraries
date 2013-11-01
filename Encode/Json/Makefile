@@ -1,18 +1,17 @@
-INCLUDE_FLAG :=
-LD_FLAG :=
-LIBS :=
+CPPFLAGS := -c
+CC := g++
+AR := ar r
+
+SOURCES := json_reader.cpp json_value.cpp json_writer.cpp
+
+.PHONY : all clean
 
 all : libjson.a
 
-libjson.a : json_reader.o json_value.o json_writer.o
-	ar r $@ $^
-json_reader.o : json_reader.cpp
-	g++ -c $^ -o $@	$(INCLUDE_FLAG)
-json_value.o : json_value.cpp
-	g++ -c $^ -o $@	$(INCLUDE_FLAG)
-json_writer.o : json_writer.cpp
-	g++ -c $^ -o $@	$(INCLUDE_FLAG)
+libjson.a : $(SOURCES:.cpp=.o)
+	$(AR) $(OUTPUT_DIR)/$@ $^
+%.o : %.cpp
+	$(CC) $(CPPFLAGS) $^ -o $@
 
 clean:
 	rm -rf *.o
-	rm -rf *.a
