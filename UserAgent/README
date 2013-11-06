@@ -1,5 +1,0 @@
-description:
-	similar with perl's LWP::UserAgent which is used to send/receive package through a simpler way ;)
-dependence:
-	libcurl
-usage:

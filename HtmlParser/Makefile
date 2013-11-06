@@ -1,6 +1,7 @@
 CPPFLAGS := -c
 CC := g++
 AR := ar r
+INCLUDES :=
 
 SOURCES := HtmlParser.cpp ParserDom.cpp ParserSax.cpp
 
@@ -11,7 +12,7 @@ all : libhtmlparser.a
 libhtmlparser.a : $(SOURCES:.cpp=.o)
 	$(AR) $(OUTPUT_DIR)/$@ $^
 %.o : %.cpp
-	$(CC) $(CPPFLAGS) $^ -o $@
+	$(CC) $(CPPFLAGS) $^ -o $@ $(INCLUDES)
 
 clean:
 	rm -rf *.o

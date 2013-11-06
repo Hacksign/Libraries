@@ -1,8 +1,9 @@
-description:
+## description:
 	a library to parse html content
-dependence:
+## dependence:
 	boost
-usage:
+## usage:
+```cpp
 	#include "HtmlParser/HtmlParser.h"
 	using namespace Spider;
 
@@ -16,3 +17,4 @@ usage:
 	tds.clear();
 	HtmlParser phone = parser.find_by_attribute_regex("id", "phoneTr\\d+");
 	for(int i = 0; i < phone.size(); ++i) cout<<phone[i].text()<<endl;
+```
