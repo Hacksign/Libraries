@@ -3,7 +3,7 @@ CC := g++
 AR := ar r
 INCLUDES :=
 
-SOURCES := HtmlParser.cpp ParserDom.cpp ParserSax.cpp
+SOURCES := HtmlParser.cpp ParserDom.cpp ParserSax.cpp Node.cpp
 
 .PHONY : all clean
 
