@@ -1,11 +1,6 @@
-CUR_DIR := $(shell pwd)
 LIB := $(CUR_DIR)/lib
 MAKE := make
 MKDIR := mkdir -p
-SUBDIRS := \
-	$(CUR_DIR)/UserAgent \
-	$(CUR_DIR)/Encode/Json \
-	$(CUR_DIR)/HtmlParser
 
 .PHONY : all clean
 
