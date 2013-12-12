@@ -22,6 +22,10 @@ Libraries
 		INCLUDES := -ID:\libs\boost -ID:\libs\curl
 ```
 	Then rerun make in Libraries directory.
+    Alternatively, you can just run below command for short:
+```bash
+    make INCLUDES=-ID:\libs\boost
+```
 
 ##License:
 	Copyright (c) 2013 Hacksign (http://www.hacksign.cn)
