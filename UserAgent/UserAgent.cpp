@@ -23,6 +23,9 @@ UserAgent::UserAgent(){
 UserAgent::~UserAgent(){
 	curl_easy_cleanup(curl);
 }
+void UserAgent::follow_location(bool bFlag){
+	curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, bFlag);
+}
 void UserAgent::debug(bool debug){
 	if(debug) curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
 	else curl_easy_setopt(curl, CURLOPT_VERBOSE, 0L);

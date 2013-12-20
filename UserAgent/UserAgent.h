@@ -22,6 +22,7 @@ class UserAgent{
 		void debug(bool);
 		void timeout(unsigned long);
 		void connection_timeout(unsigned long);
+		void follow_location(bool);
 		struct curl_slist * header(const char *);
 		const char * header();
 		long status();
