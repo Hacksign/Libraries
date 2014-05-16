@@ -199,7 +199,7 @@ FastWriter::write( const Value &root )
 {
    document_ = "";
    writeValue( root );
-   document_ += "\n";
+   //document_ += "\n";
    return document_;
 }
 
@@ -282,7 +282,7 @@ StyledWriter::write( const Value &root )
    writeCommentBeforeValue( root );
    writeValue( root );
    writeCommentAfterValueOnSameLine( root );
-   document_ += "\n";
+   //document_ += "\n";
    return document_;
 }
 
@@ -486,7 +486,7 @@ StyledWriter::writeCommentBeforeValue( const Value &root )
    if ( !root.hasComment( commentBefore ) )
       return;
    document_ += normalizeEOL( root.getComment( commentBefore ) );
-   document_ += "\n";
+   //document_ += "\n";
 }
 
 
@@ -498,9 +498,9 @@ StyledWriter::writeCommentAfterValueOnSameLine( const Value &root )
 
    if ( root.hasComment( commentAfter ) )
    {
-      document_ += "\n";
+      //document_ += "\n";
       document_ += normalizeEOL( root.getComment( commentAfter ) );
-      document_ += "\n";
+      //document_ += "\n";
    }
 }
 
@@ -558,7 +558,7 @@ StyledStreamWriter::write( std::ostream &out, const Value &root )
    writeCommentBeforeValue( root );
    writeValue( root );
    writeCommentAfterValueOnSameLine( root );
-   *document_ << "\n";
+   //*document_ << "\n";
    document_ = NULL; // Forget the stream, for safety.
 }
 
@@ -766,7 +766,7 @@ StyledStreamWriter::writeCommentBeforeValue( const Value &root )
    if ( !root.hasComment( commentBefore ) )
       return;
    *document_ << normalizeEOL( root.getComment( commentBefore ) );
-   *document_ << "\n";
+   //*document_ << "\n";
 }
 
 
@@ -778,9 +778,9 @@ StyledStreamWriter::writeCommentAfterValueOnSameLine( const Value &root )
 
    if ( root.hasComment( commentAfter ) )
    {
-      *document_ << "\n";
+      //*document_ << "\n";
       *document_ << normalizeEOL( root.getComment( commentAfter ) );
-      *document_ << "\n";
+      //*document_ << "\n";
    }
 }
 
