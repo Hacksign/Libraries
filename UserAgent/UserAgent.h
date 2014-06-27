@@ -19,6 +19,7 @@ class UserAgent{
 		CURLcode post(const char * url,const char * content, const char * filename, void* buffer, size_t buffer_size);//for upload file with a buffer in memory
 		CURLcode get(const char * url);
 		string header(const char *, const char *);
+		void ipv4_only();
 		void debug(bool);
 		void timeout(unsigned long);
 		void connection_timeout(unsigned long);

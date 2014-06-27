@@ -23,6 +23,9 @@ UserAgent::UserAgent(){
 UserAgent::~UserAgent(){
 	curl_easy_cleanup(curl);
 }
+void UserAgent::ipv4_only(){
+	curl_easy_setopt(curl, CURLOPT_IPRESOLVE, CURL_IPRESOLVE_V4);
+}
 void UserAgent::follow_location(bool bFlag){
 	curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, bFlag);
 }
